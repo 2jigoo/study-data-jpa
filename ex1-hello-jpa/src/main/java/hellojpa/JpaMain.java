@@ -23,22 +23,32 @@ public class JpaMain {
 //            equalsWhenPkIsSame(em);
 //            sendSQLWhenCommit(em);
 //            dirtyCheck(em);
+//            enumerated(em);
+//            generationType(em);
 
-            // EnumType.ORDINAL -> 정의된 순서대로 번호가 매겨진다
-            // Enum에 변경사항이 발생하면
-            // 이전 데이터의 값이 어떤 enum 값을 뜻하는 건지 알 수 없다.
-
-            Member member = new Member();
-            member.setId(1L);
-            member.setUsername("A");
-            member.setRoleType(RoleType.USER);
+            Member member1 = new Member();
+            member1.setUsername("멤버A");
 
             Member member2 = new Member();
-            member2.setId(2L);
-            member2.setUsername("B");
-            member2.setRoleType(RoleType.ADMIN);
+            member1.setUsername("멤버B");
 
-            em.persist(member);
+            Member member3 = new Member();
+            member1.setUsername("멤버C");
+
+            System.out.println("======================");
+
+            // call next value -> DB SEQ = 1
+            // call next value -> DB SEQ = 51
+            em.persist(member1); // 1, 51
+            em.persist(member2); // (Memory) 2
+            em.persist(member3); // (Memory) 3
+
+            System.out.println("member1.id = " + member1.getId());
+            System.out.println("member2.id = " + member2.getId());
+            System.out.println("member3.id = " + member3.getId());
+
+            System.out.println("======================");
+
 
             tx.commit();
         } catch (Exception e) {
@@ -48,6 +58,41 @@ public class JpaMain {
         }
 
         emf.close(); // application 종료시
+    }
+
+    private static void generationType(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("따라란");
+
+        System.out.println("======================");
+
+        // 1. identity 전략
+        // 1차 캐시로 관리하기 위해 PK값이 필요. persist 할 때 INSERT 쿼리 실행
+
+        // 2. sequence 전략
+        // call next value for MEMBER_SEQ. 커밋 시점에 INSERT 쿼리 실행
+        em.persist(member);
+
+        System.out.println("member.id = " + member.getId());
+        System.out.println("======================");
+    }
+
+    private static void enumerated(EntityManager em) {
+        // EnumType.ORDINAL -> 정의된 순서대로 번호가 매겨진다
+        // Enum에 변경사항이 발생하면
+        // 이전 데이터의 값이 어떤 enum 값을 뜻하는 건지 알 수 없다.
+
+        Member member = new Member();
+        member.setId(1L);
+        member.setUsername("A");
+        member.setRoleType(RoleType.USER);
+
+        Member member2 = new Member();
+        member2.setId(2L);
+        member2.setUsername("B");
+        member2.setRoleType(RoleType.ADMIN);
+
+        em.persist(member);
     }
 
     private static void dirtyCheck(EntityManager em) {
