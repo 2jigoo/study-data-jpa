@@ -1,0 +1,30 @@
+plugins {
+    id 'war'
+    id 'java'
+}
+
+group 'jpabook'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.11'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    implementation 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testImplementation 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    implementation 'org.hibernate:hibernate-entitymanager:5.6.7.Final'
+    implementation 'com.h2database:h2:2.1.210'
+
+}
+
+test {
+    useJUnitPlatform()
+}
