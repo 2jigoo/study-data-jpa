@@ -1,5 +1,8 @@
 package jpabook.jpashop;
 
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderItem;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -16,7 +19,16 @@ public class JpaMain {
 
         try {
 
+            // 이렇게 단방향 연관관계로 매핑해도 문제는 없다.
+            // 양방향으로 만드는 것은 개발, 조회의 편의성을 위함.
+            Order order = new Order();
+//            order.addOrderItem(new OrderItem());
+            em.persist(order);
 
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+
+            em.persist(orderItem);
 
             tx.commit();
         } catch (Exception e) {
