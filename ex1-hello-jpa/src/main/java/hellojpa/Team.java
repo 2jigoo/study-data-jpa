@@ -19,6 +19,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
+//    @JoinColumn(name = "TEAM_ID") // 일대다 단방향 시, @JoinColum 필요
     private List<Member> members = new ArrayList<>();
 
     public void addMember(Member member) {
