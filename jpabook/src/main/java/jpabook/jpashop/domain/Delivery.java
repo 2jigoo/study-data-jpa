@@ -1,9 +1,13 @@
 package jpabook.jpashop.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
-public class Delivery {
+@Getter @Setter
+public class Delivery extends BaseEntity {
 
     @Id @GeneratedValue
     private Long id;

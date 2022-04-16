@@ -1,5 +1,6 @@
 package jpabook.jpashop;
 
+import jpabook.jpashop.domain.Book;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
 
@@ -19,16 +20,12 @@ public class JpaMain {
 
         try {
 
-            // 이렇게 단방향 연관관계로 매핑해도 문제는 없다.
-            // 양방향으로 만드는 것은 개발, 조회의 편의성을 위함.
-            Order order = new Order();
-//            order.addOrderItem(new OrderItem());
-            em.persist(order);
+//            oneToMany(em);
+            Book book = new Book();
+            book.setName("JPA");
+            book.setAuthor("김영한");
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-
-            em.persist(orderItem);
+            em.persist(book);
 
             tx.commit();
         } catch (Exception e) {
@@ -40,5 +37,18 @@ public class JpaMain {
 
         emf.close();
 
+    }
+
+    private static void oneToMany(EntityManager em) {
+        // 이렇게 단방향 연관관계로 매핑해도 문제는 없다.
+        // 양방향으로 만드는 것은 개발, 조회의 편의성을 위함.
+        Order order = new Order();
+//            order.addOrderItem(new OrderItem());
+        em.persist(order);
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+
+        em.persist(orderItem);
     }
 }
