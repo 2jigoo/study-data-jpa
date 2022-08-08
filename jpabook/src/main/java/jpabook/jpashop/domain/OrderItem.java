@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Getter @Setter
 public class OrderItem extends BaseEntity {
@@ -13,12 +15,13 @@ public class OrderItem extends BaseEntity {
     @Column(name = "ORDER_ITEM_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "ORDER_ID")
     private Order order;
 
+    @ManyToOne(fetch = LAZY)
     @Column(name = "ITEM_ID")
-    private Long itemId;
+    private Item item;
 
     private int orderPrice;
     private int count;
