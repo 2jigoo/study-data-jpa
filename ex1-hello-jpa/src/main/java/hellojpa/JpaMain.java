@@ -31,8 +31,8 @@ public class JpaMain {
             favoriteFoods.add("족발");
             favoriteFoods.add("피자");
 
-            member.getAddressHistory().add(new Address("old1", "street", "12345"));
-            member.getAddressHistory().add(new Address("old2", "street", "12345"));
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "12345"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "12345"));
 
             em.persist(member);
 
@@ -43,9 +43,9 @@ public class JpaMain {
             // Member만 가져옴
             Member findMember = em.find(Member.class, member.getId());
 
-            List<Address> addressHistory = findMember.getAddressHistory();
-            for (Address a : addressHistory) {
-                System.out.println("address: " + a.getCity());
+            List<AddressEntity> addressHistory = findMember.getAddressHistory();
+            for (AddressEntity a : addressHistory) {
+                System.out.println("address: " + a.getAddress());
             }
 
             tx.commit();
