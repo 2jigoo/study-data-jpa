@@ -3,6 +3,9 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDTO;
@@ -146,5 +149,41 @@ class MemberRepositoryTest {
         Member member = memberRepository.findMemberByUsername("AAA"); // null
         Optional<Member> optMember = memberRepository.findOptByUsername("AAA"); // Optional.empty
         */
+    }
+
+    @Test
+    public void testPaging() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        // when
+        Page<Member> page = memberRepository.findPageByAge(age, pageRequest);
+//        Slice<Member> slice = memberRepository.findSlice(age, pageRequest);
+
+        // 엔티티를 외부에 노출 시키면 안 된다. 컨트롤러에서 반환할 땐 DTO로 변환하기.
+        Page<MemberDTO> dtoPage = page.map(MemberDTO::of);
+
+        // then
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements(); // Slice X
+
+        for (Member member : content) {
+            System.out.println("member: " + member);
+        }
+        System.out.println("totalElements: " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(totalElements).isEqualTo(5); // Slice X
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.getTotalPages()).isEqualTo(2); // Slice X
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
     }
 }
