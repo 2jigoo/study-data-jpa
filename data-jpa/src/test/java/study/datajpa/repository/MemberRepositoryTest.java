@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,9 @@ class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Test
     public void testMember() {
@@ -85,6 +90,33 @@ class MemberRepositoryTest {
 
         List<Member> result = memberRepository.findUser("AAA", 10);
         assertThat(result.get(0)).isEqualTo(m1);
+    }
+    
+    @Test
+    public void testFindUsernameList() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<String> usernameList = memberRepository.findUsernameList();
+        for (String s : usernameList) {
+            System.out.println("s: " + s);
+        }
+    }
+
+    @Test
+    public void testFindMemberDTO() {
+        Team team = new Team("TeamA");
+        teamRepository.save(team);
+
+        Member m1 = new Member("AAA", 10, team);
+        memberRepository.save(m1);
+
+        List<MemberDTO> list = memberRepository.findMemberDTO();
+        for (MemberDTO dto : list) {
+            System.out.println("dto: " + dto);
+        }
     }
 
 }
