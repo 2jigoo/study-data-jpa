@@ -12,6 +12,8 @@ import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,9 @@ class MemberRepositoryTest {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -185,5 +190,28 @@ class MemberRepositoryTest {
         assertThat(page.getTotalPages()).isEqualTo(2); // Slice X
         assertThat(page.isFirst()).isTrue();
         assertThat(page.hasNext()).isTrue();
+    }
+
+    @Test
+    public void testBulkUpdate() {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // jpql 실행 전에 flush 하고 jpql 쿼리를 실행한다.
+        int affectedRows = memberRepository.bulkGetAYearOlder(20);
+
+        // 영속성 컨텍스트에 bulk update의 결과가 반영되지 않기 때문에, 영속성 컨텍스트를 초기화 해줘야한다.
+        // @Modifying(clearAutomatically = true)로 대체할 수 있다.
+//        em.flush();
+//        em.clear();
+
+        Member member5 = memberRepository.findMemberByUsername("member5");
+        System.out.println(member5);
+
+        assertThat(affectedRows).isEqualTo(3);
+        assertThat(member5.getAge()).isEqualTo(41);
     }
 }
