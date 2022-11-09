@@ -132,4 +132,19 @@ class MemberRepositoryTest {
             System.out.println("member: " + member);
         }
     }
+
+    @Test
+    public void testReturnType() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        // 조회 결과가 없을 때
+        List<Member> list = memberRepository.findListByUsername("AAA"); // Collection의 경우 null이 아니라 empty
+        /*
+        Member member = memberRepository.findMemberByUsername("AAA"); // null
+        Optional<Member> optMember = memberRepository.findOptByUsername("AAA"); // Optional.empty
+        */
+    }
 }
