@@ -21,14 +21,13 @@ public class MemberDTO {
         this.teamName = teamName;
     }
 
-    public MemberDTO(Long id, String username, int age, String teamName) {
+    public MemberDTO(Long id, String username, int age) {
         this.id = id;
         this.username = username;
         this.age = age;
-        this.teamName = teamName;
     }
 
     public static MemberDTO of(Member member) {
-        return new MemberDTO(member.getId(), member.getUsername(), member.getAge(), member.getTeam().getName());
+        return new MemberDTO(member.getId(), member.getUsername(), member.getAge());
     }
 }
