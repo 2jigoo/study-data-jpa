@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+@Rollback
 class MemberRepositoryTest {
 
     @Autowired
@@ -214,4 +214,50 @@ class MemberRepositoryTest {
         assertThat(affectedRows).isEqualTo(3);
         assertThat(member5.getAge()).isEqualTo(41);
     }
+
+    @Test
+    public void findMemberLazy() {
+        // given
+
+        // member1 -> teamA
+        // member2 -> teamB
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamA);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+
+        // when N + 1 (쿼리를 한 번 날렸지만 결과의 개수 N만큼 쿼리 전송이 더 발생한다.)
+        /*
+        List<Member> members = memberRepository.findAll();                              // select * from member
+
+        // Team의 데이터를 사용하는 시점에 조회 쿼리 나가게 된다.
+        for (Member member : members) {
+            System.out.println("member: " + member.getUsername());
+            System.out.println("member.team.class: " + member.getTeam().getClass());    // entity.Team$HibernateProxy
+            System.out.println("member.team: " + member.getTeam().getName());           // select * from team where team_id = ? 발생
+        }
+        */
+
+        // when
+        List<Member> members = memberRepository.findMemberFetchJoin();                  // select * from member left outer join team
+
+        for (Member member : members) {
+            System.out.println("member: " + member.getUsername());
+            System.out.println("member.team.class: " + member.getTeam().getClass());    // entity.Team (실제 엔티티 객체)
+            System.out.println("member.team: " + member.getTeam().getName());
+        }
+
+
+    }
+
 }
