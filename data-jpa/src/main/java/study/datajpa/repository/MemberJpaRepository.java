@@ -1,6 +1,5 @@
 package study.datajpa.repository;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 import study.datajpa.entity.Member;
 
@@ -42,6 +41,12 @@ public class MemberJpaRepository {
 
     public Member find(Long id) {
         return em.find(Member.class, id);
+    }
+
+    public List<Member> findByUsername(String username) {
+        return em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", "회원1")
+                .getResultList();
     }
 
     public List<Member> findByUsernameAndAgeGreaterThan(String username, int age) {
