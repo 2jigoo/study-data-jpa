@@ -269,7 +269,35 @@ class MemberRepositoryTest {
             System.out.println("member.team.class: " + member.getTeam().getClass());    // entity.Team (실제 엔티티 객체)
             System.out.println("member.team: " + member.getTeam().getName());
         }
+    }
 
+
+    @Test
+    public void testQueryHint() {
+        // given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        // when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+
+        // readOnly로 설정했기 때문에 스냅샷이 없고 변경감지 하지 않는다. update 발생 X
+        findMember.setUsername("member2");
+        em.flush();
+
+    }
+
+
+    @Test
+    public void testLock() {
+        // given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        // select ... for update
+        List<Member> findMembers = memberRepository.findLockByUsername("member1");
 
     }
 

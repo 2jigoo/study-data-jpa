@@ -50,14 +50,14 @@ public class MemberJpaRepository {
     }
 
     public List<Member> findByUsernameAndAgeGreaterThan(String username, int age) {
-        return em.createQuery("select m from Member m where m.username = :username and m.age > :age")
+        return em.createQuery("select m from Member m where m.username = :username and m.age > :age", Member.class)
                 .setParameter("username", username)
                 .setParameter("age", age)
                 .getResultList();
     }
 
     public List<Member> findPage(int age, int offset, int limit) {
-        return em.createQuery("select m from Member m where m.age = :age order by m.username desc")
+        return em.createQuery("select m from Member m where m.age = :age order by m.username desc", Member.class)
                 .setParameter("age", age)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
