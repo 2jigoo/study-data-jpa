@@ -301,4 +301,9 @@ class MemberRepositoryTest {
 
     }
 
+    @Test
+    public void testCallCustomRepository() {
+        List<Member> findMember = memberRepository.findMemberCustom();
+    }
+
 }
