@@ -330,4 +330,43 @@ class MemberRepositoryTest {
         Assertions.assertThat(result.size()).isEqualTo(1);
     }
 
+
+    @Test
+    public void queryByExample() {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        // Probe: 필드에 데이터가 있는 실제 도메인 객체(엔티티 자체가 검색 조건이 된다)
+        Member member = new Member("m1");
+        Team team = new Team("teamA");
+        member.setTeam(team); // INNER JOIN
+
+        // ExampleMatcher: 특정 필드를 일치시키는 상세 정보 제공, 재사용 가능
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("age");
+
+        // Example: Probe와 ExampleMatcher로 구성. 쿼리 생성하는 데 사용
+        Example<Member> example = Example.of(member, matcher);
+
+        List<Member> result = memberRepository.findAll(example);
+        
+        // 실무 사용 기준 - JOIN이 해결이 되는지
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("m1");
+
+        // 실무에서 사용하기엔 매칭 조건이 너무 단순하고 LEFT JOIN이 안 됨
+    }
+
 }
