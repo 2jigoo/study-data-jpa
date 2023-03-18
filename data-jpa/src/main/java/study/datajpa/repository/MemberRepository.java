@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
+import study.datajpa.repository.projection.MemberProjection;
 
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
@@ -87,5 +88,18 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
     // 5-3. Projection
 //    List<SimpleData> findUsingProjectionsByUsername(@Param("username") String username);
     <T> List<T> findUsingProjectionsByUsername(@Param("username") String username, Class<T> type);
+
+    // 5-4. Native Query
+    // 보통 통계성 쿼리로 DTO로 가져오고 싶을 때 사용 (Projection을 이용해 DTO로 받을 수 있다)
+    // 지원되지 않는 반환 타입이 몇 가지 있음
+    // native sql을 DTO로 조회할 때는 JdbcTemplate 또는 Mybatis 권장
+    @Query(value = "select * from member where username = ?", nativeQuery = true)
+    Member findUsingNativeQuery(String username);
+
+    @Query(value = "select m.member_id as id, m.username, t.name as teamName " +
+            "from member m left join Team t",
+            countQuery = "select count(*) from member",
+            nativeQuery = true)
+    Page<MemberProjection> findUsingNativeProjection(Pageable pageable);
 
 }

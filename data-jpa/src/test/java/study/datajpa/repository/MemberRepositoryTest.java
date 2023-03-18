@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
+import study.datajpa.repository.projection.MemberProjection;
 import study.datajpa.repository.projection.NestedClosedProjections;
 import study.datajpa.repository.projection.UsernameDTO;
 
@@ -397,5 +398,32 @@ class MemberRepositoryTest {
             System.out.println("username: " + username + ", teamName: " + teamName);
         });
     }
+
+    @Test
+    public void testNativeQuery() {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+//        Member findMember = memberRepository.findUsingNativeQuery("m1");
+//        System.out.println("findMember: " + findMember);
+
+        Page<MemberProjection> result = memberRepository.findUsingNativeProjection(PageRequest.of(0, 10));
+        List<MemberProjection> content = result.getContent();
+        for (MemberProjection member : content) {
+            System.out.println("username: " + member.getUsername() + ", teamName: " + member.getTeamName());
+        }
+
+    }
+
 
 }
