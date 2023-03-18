@@ -4,15 +4,15 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDTO;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
+import study.datajpa.repository.projection.NestedClosedProjections;
+import study.datajpa.repository.projection.UsernameDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -367,6 +367,35 @@ class MemberRepositoryTest {
         assertThat(result.get(0).getUsername()).isEqualTo("m1");
 
         // 실무에서 사용하기엔 매칭 조건이 너무 단순하고 LEFT JOIN이 안 됨
+    }
+
+    @Test
+    public void testProjection() {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+//         AbstractJpaQuery$TupleConverter$TupleBackedMap
+//        List<SimpleData> result = memberRepository.findUsingProjectionsByUsername("m1", SimpleData.class);
+
+//        List<UsernameDTO> result = memberRepository.findUsingProjectionsByUsername("m1", UsernameDTO.class);
+//        result.forEach(System.out::println);
+
+        List<NestedClosedProjections> result = memberRepository.findUsingProjectionsByUsername("m1", NestedClosedProjections.class);
+        result.forEach(res -> {
+            String username = res.getUsername();
+            String teamName = res.getTeam().getName();
+            System.out.println("username: " + username + ", teamName: " + teamName);
+        });
     }
 
 }
